@@ -100,17 +100,22 @@ const res = request(
 const releases = JSON.parse(res.getBody())
 
 // Ignore drafts
-const tags = releases.filter((r) => !r.draft).map((r) => r.tag_name)
+let tags = releases.filter((r) => !r.draft).map((r) => r.tag_name)
 
 console.info('Discovered', tags.length, 'releases:', tags)
 
 // Pull latest site master with last docs built
 
-console.info('Getting latest published built site, which is on the master branch')
+console.info(
+  'Getting latest published built site, which is on the master branch'
+)
 child_process.execSync(
   'git clone https://github.com/excaliburjs/excaliburjs.github.io -b master _current',
   { stdio: [0, 1, 2] }
 )
+
+// Build the last 4 releases
+tags = tags.slice(0, 4)
 
 tags.forEach(function (tag) {
   // Ignore releases that are already checked into source control
